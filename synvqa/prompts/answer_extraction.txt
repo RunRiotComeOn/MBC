@@ -1,0 +1,27 @@
+You will be given a fact-seeking question and a set of retrieved web snippets. Your task is to determine whether the question is answerable from the evidence, and if so, produce a short-form answer, a declarative fact statement, and cited supporting snippets.
+
+Question:
+{question}
+
+Evidence (each item has url and content):
+{evidence_blocks}
+
+Rules:
+- An answer must be a SHORT, ATOMIC entity (single name, number, short phrase ≤ 5 words).
+- Every supporting_snippets[i].quote MUST appear VERBATIM in one of the evidence items.
+- If evidence is insufficient, or answers disagree across sources, set answerable=false or contested=true respectively.
+- fact_statement must be a single declarative sentence encoding (question, answer).
+
+Return STRICT JSON:
+{
+  "answerable": true | false,
+  "answer": "<short-form answer or null>",
+  "fact_statement": "<declarative sentence or null>",
+  "supporting_snippets": [
+    {"url": "<url>", "quote": "<verbatim quote>"},
+    ...
+  ],
+  "confidence": "high" | "medium" | "low",
+  "contested": true | false,
+  "notes": "<optional brief rationale>"
+}

@@ -1,0 +1,11 @@
+Judge whether the following fact has a concrete VISUAL HOOK — i.e., whether a photorealistic or illustrative image can naturally depict a scene that contextually relates to the fact. Pure abstractions (mathematical definitions, event dates without subjects, policy names) should be marked abstract.
+
+Fact statement:
+{fact}
+
+Return STRICT JSON:
+{
+  "visualizable": true | false,
+  "candidate_visual_hook": "<what physical object/scene could anchor an image, or null>",
+  "reason": "<one sentence>"
+}

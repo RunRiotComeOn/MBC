@@ -1,0 +1,59 @@
+# Source reliability whitelist for Stage 3a veracity checks.
+# Tier weights: high=1.0, medium=0.6, low=0.3. Unlisted domains default to low.
+high:
+  # Encyclopedias / reference
+  - en.wikipedia.org
+  - britannica.com
+  # Government / official
+  - nih.gov
+  - cdc.gov
+  - nasa.gov
+  - noaa.gov
+  - un.org
+  - who.int
+  - europa.eu
+  # Academic / publishing
+  - nature.com
+  - science.org
+  - springer.com
+  - sciencedirect.com
+  - arxiv.org
+  - acm.org
+  - ieee.org
+  # News (long-form / fact-checked)
+  - reuters.com
+  - apnews.com
+  - bbc.com
+  - bbc.co.uk
+  - nytimes.com
+  - washingtonpost.com
+  - theguardian.com
+  - economist.com
+
+medium:
+  - cnn.com
+  - bloomberg.com
+  - forbes.com
+  - wired.com
+  - techcrunch.com
+  - arstechnica.com
+  - theverge.com
+  - npr.org
+  - pbs.org
+  - time.com
+  - nationalgeographic.com
+  - scientificamerican.com
+  - imdb.com
+  - rottentomatoes.com
+
+# Explicitly disallowed domains (content farms, known low-reliability, user-generated without vetting)
+denylist:
+  - quora.com
+  - answers.com
+  - wikihow.com
+  - yahoo.com
+  - reddit.com
+  - pinterest.com
+  - medium.com       # user-generated, no editorial gate
+  - ehow.com
+  - buzzfeed.com

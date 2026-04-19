@@ -1,0 +1,8 @@
+Decide whether a model's predicted answer is semantically equivalent to a gold answer for the given question. Accept minor surface differences (abbreviation, casing, alternative naming, ISO codes vs. names). Reject answers that name a different entity or refuse to answer.
+
+Question: {question}
+Gold answer: {gold}
+Predicted answer: {predicted}
+
+Return STRICT JSON:
+{"match": true | false, "reason": "<one sentence>"}

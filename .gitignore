@@ -1,0 +1,17 @@
+.env
+.env.*
+__pycache__/
+*.pyc
+logs/
+data/
+slurm-*.out
+slurm-*.err
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+synvqa/data/*
+
+.claude/*
+.codex

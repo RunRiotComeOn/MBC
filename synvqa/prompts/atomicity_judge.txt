@@ -1,0 +1,7 @@
+Judge whether the following answer is ATOMIC — a single named entity, number, date, or short noun phrase (≤ 5 words) — and NOT a compound, list, or explanatory sentence.
+
+Question: {question}
+Answer: {answer}
+
+Return STRICT JSON:
+{"atomic": true | false, "reason": "<one sentence>"}

@@ -1,0 +1,5 @@
+You are verifying that a generated image faithfully reflects an intended caption. Answer the following targeted question about the image with a single word: "yes" or "no".
+
+Question: Does the image contain {visual_anchor}?
+
+If uncertain, answer "no".

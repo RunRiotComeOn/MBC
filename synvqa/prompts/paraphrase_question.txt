@@ -1,0 +1,7 @@
+Produce {n} semantically-equivalent paraphrases of the following fact-seeking question. Keep the expected short-form answer identical. Vary surface form (word order, synonyms, question vs. declarative cue), but DO NOT change the asked-about entity or property.
+
+Original question:
+{question}
+
+Return STRICT JSON:
+{"paraphrases": ["...", "...", "..."]}

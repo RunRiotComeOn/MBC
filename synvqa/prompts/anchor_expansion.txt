@@ -1,0 +1,23 @@
+You are helping build a diverse pool of fact-seeking anchor questions for a visual question answering dataset. The dataset targets a vision-language model with knowledge cutoff {cutoff_date}; every question must be about a fact that was FIRST ESTABLISHED AFTER that cutoff, i.e. an event, outcome, release, appointment, or designation from AFTER {cutoff_date} through {now_date}.
+
+You will be given {k} demonstration questions. Your task is to produce {m} NEW questions that:
+  1. Each have a single, short-form factual answer (a named entity, number, short noun phrase).
+  2. Ask about facts whose answer was DETERMINED strictly AFTER {cutoff_date} — e.g. winners of awards/elections/tournaments held after that date, officials appointed after it, products first released after it, discoveries first announced after it. Do NOT ask about evergreen or pre-cutoff facts, even if they are still true today.
+  3. Are plausibly visualizable: the entity, scene, object, or setting implied by the question could appear in a photograph or illustration (a person, product, trophy, flag, building, landmark, etc.).
+  4. Are NOT opinion, advice, prediction, subjective-preference, or open-ended "how/why" questions.
+  5. Cover topics DIFFERENT from those in the demonstrations (different entities, different domains if possible). Span across domains: politics, sport, science awards, film/TV awards, music, technology product launches, corporate leadership changes, natural/astronomical events, book prizes, international summits, etc.
+  6. Are self-contained (no pronoun references to prior context) and include an explicit time anchor (a year, a named event, or a month-year) inside the question.
+  7. Do NOT require you to know the answer — you only need to write well-formed questions whose answers will be retrieved from web search downstream.
+
+Demonstration questions:
+{demos}
+
+Return STRICT JSON with this schema:
+{
+  "questions": [
+    {"question": "<question text>", "rationale_topic": "<one-line: what new domain/topic does this cover>"},
+    ...
+  ]
+}
+
+Produce exactly {m} questions. Do not repeat or paraphrase the demonstrations.

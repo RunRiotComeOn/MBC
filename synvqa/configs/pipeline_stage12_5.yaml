@@ -1,0 +1,75 @@
+# Small smoke-test pipeline for 5 samples through stages 1 and 2 only.
+target_vlm: "deepseek-chat"
+generator_llm: "deepseek-chat"
+judge_llm: "deepseek-chat"
+t2i_model: "FLUX.1-dev"
+faithfulness_vlm: "InternVL2-8B"
+embedding_model: "local-hash"
+strict_model_decorrelation: false
+cutoff_date: "2025-02"
+
+output_dir: "./data/stage12_5"
+target_dataset_size: 5
+oversample_factor: 1
+
+stage1:
+  n_seeds_min: 5
+  demos_per_call: 5
+  new_per_call: 5
+  dedup_threshold: 0.85
+  max_iters: 5
+  cluster_k: 5
+  seed_mix_min: 2
+  early_stop_consecutive_high_reject: 3
+  high_reject_threshold: 0.7
+
+stage2:
+  search_backend: "tavily"
+  query_variants: 2
+  top_k_urls: 5
+  results_per_query: 5
+  min_supporting_snippets: 1
+  drop_contested: false
+  fetch_timeout_s: 20
+  max_content_chars: 40000
+  citation_verify: false
+
+stage3a:
+  min_veracity_score: 0.8
+  min_independent_sources: 2
+  reliability_whitelist_path: "configs/source_reliability.yaml"
+
+stage3b:
+  tau_confidence: 0.6
+  paraphrase_recheck: true
+  n_paraphrases: 3
+  logprob_fallback: "consistency"
+  consistency_n_samples: 5
+  consistency_agreement_threshold: 0.6
+  target_vlm_decode:
+    temperature: 0.0
+    max_new_tokens: 64
+    return_logprobs: true
+
+stage4:
+  max_retries: 3
+  leakage_check_mode: "substring+embedding"
+  leakage_embedding_threshold: 0.7
+
+stage5:
+  t2i_resolution: 1024
+  t2i_steps: 30
+  t2i_batch_size: 4
+  fidelity_threshold: 0.7
+  max_retries: 2
+  ocr_leakage_check: true
+  safety_filter: true
+
+logging:
+  level: "INFO"
+  file: "logs/pipeline.log"
+
+provenance:
+  include_prompt_hash: true
+  include_model_version: true
+  include_api_call_id: true

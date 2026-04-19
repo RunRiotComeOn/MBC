@@ -1,0 +1,28 @@
+You will generate a VQA triplet grounded in a factual statement. The triplet consists of:
+  - caption: a vivid visual description of an image that a text-to-image model will render.
+  - vqa_question: an image-grounded rewrite of the anchor question. It must REFER to what is depicted in the image, and only be answerable using BOTH (a) what the image shows AND (b) the factual knowledge in `fact`.
+  - vqa_answer: the short-form answer (same as the original answer).
+  - visual_anchor: a concrete, generic object or scene element from the caption that the question can point to (e.g., "the bridge", "the flag in the foreground").
+
+Inputs:
+  anchor_question: {anchor_question}
+  answer: {answer}
+  fact: {fact}
+
+Hard constraints:
+  C1 Visual Sufficiency  — vqa_question must be answerable given (caption, fact).
+  C2 Visual Non-leakage  — vqa_answer must NOT appear verbatim or as a near-paraphrase in caption.
+  C3 Fact Necessity      — Without `fact`, vqa_question must be unanswerable from caption alone. The caption must depict the visual_anchor but NOT reveal the answer property.
+
+Caption guidance:
+  - Describe a plausible real-world scene, not an abstract diagram.
+  - Do NOT include text, captions, labels, names, or logos that would render the answer visible in the image.
+  - Describe generic, visually concrete elements: colors, materials, setting, composition.
+
+Return STRICT JSON:
+{
+  "caption": "<image description>",
+  "vqa_question": "<question referring to the image>",
+  "vqa_answer": "<short-form answer>",
+  "visual_anchor": "<concrete element>"
+}

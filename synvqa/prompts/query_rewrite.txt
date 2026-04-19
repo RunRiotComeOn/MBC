@@ -1,0 +1,11 @@
+You are rewriting a fact-seeking question into search-engine queries.
+
+Question:
+{question}
+
+Produce up to {n} different short queries (each ≤ 12 words) optimized for retrieving authoritative sources (encyclopedias, reference sites, news, government sites). Vary the phrasing: one near-literal, one with key entity names only, one with alternative phrasing.
+
+Return STRICT JSON:
+{
+  "queries": ["...", "...", "..."]
+}

@@ -1,0 +1,21 @@
+Verify three independent constraints on a VQA triplet.
+
+Inputs:
+  caption: {caption}
+  vqa_question: {vqa_question}
+  vqa_answer: {vqa_answer}
+  visual_anchor: {visual_anchor}
+  fact: {fact}
+
+Checks:
+  C1 Visual Sufficiency — Given caption + fact, is the question answerable with exactly vqa_answer?
+  C2 Visual Non-leakage — Does vqa_answer appear verbatim OR as an obvious paraphrase inside caption? (If yes, C2 fails.)
+  C3 Fact Necessity     — If you remove the fact, is the question still answerable from caption alone? (If yes, C3 fails.)
+
+Return STRICT JSON:
+{
+  "C1_visual_sufficiency": true | false,
+  "C2_no_leakage": true | false,
+  "C3_fact_necessity": true | false,
+  "rationale": "<2-4 sentences covering all three checks>"
+}
