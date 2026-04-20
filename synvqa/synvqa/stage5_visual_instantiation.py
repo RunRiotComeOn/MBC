@@ -73,6 +73,8 @@ def _instantiate(
     vqa_answer = sample["vqa_answer"]
     anchor = sample["visual_anchor"]
 
+    skip_faith = cfg.get("skip_faithfulness", False)
+
     for attempt in range(cfg["max_retries"] + 1):
         seed = 1000 + attempt * 17 + hash(sample["id"]) % 10000
         try:
@@ -82,30 +84,34 @@ def _instantiate(
             prov.log("t2i_error", attempt=attempt, error=str(e))
             continue
 
-        # (1) Captioning round-trip similarity
-        try:
-            rt_caption = faith.caption_image(str(img_path))
-            sim = embedder.similarity(caption, rt_caption)
-        except Exception as e:
-            prov.log("rt_caption_error", attempt=attempt, error=str(e))
-            sim = 0.0
-            rt_caption = ""
-        prov.log("round_trip", sim=sim, rt_caption=rt_caption[:200])
+        sim = 1.0
+        if not skip_faith:
+            # (1) Captioning round-trip similarity
+            try:
+                rt_caption = faith.caption_image(str(img_path))
+                sim = embedder.similarity(caption, rt_caption)
+            except Exception as e:
+                prov.log("rt_caption_error", attempt=attempt, error=str(e))
+                sim = 0.0
+                rt_caption = ""
+            prov.log("round_trip", sim=sim, rt_caption=rt_caption[:200])
 
-        if sim < cfg["fidelity_threshold"]:
-            continue
+            if sim < cfg["fidelity_threshold"]:
+                continue
 
-        # (2) Targeted visual-anchor probe
-        probe_prompt = render_prompt(faith_tmpl, visual_anchor=anchor)
-        try:
-            pr = faith.generate_with_image(str(img_path), probe_prompt, max_new_tokens=8)
-            yes = "yes" in pr.text.strip().lower()[:5]
-        except Exception as e:
-            prov.log("anchor_probe_error", attempt=attempt, error=str(e))
-            yes = False
-        prov.log("anchor_probe", yes=yes, text=(pr.text if yes else ""))
-        if not yes:
-            continue
+            # (2) Targeted visual-anchor probe
+            probe_prompt = render_prompt(faith_tmpl, visual_anchor=anchor)
+            try:
+                pr = faith.generate_with_image(str(img_path), probe_prompt, max_new_tokens=8)
+                yes = "yes" in pr.text.strip().lower()[:5]
+            except Exception as e:
+                prov.log("anchor_probe_error", attempt=attempt, error=str(e))
+                yes = False
+            prov.log("anchor_probe", yes=yes, text=(pr.text if yes else ""))
+            if not yes:
+                continue
+        else:
+            prov.log("skip_faithfulness", reason="config")
 
         # (3) OCR answer-in-image leakage
         if cfg.get("ocr_leakage_check", True):

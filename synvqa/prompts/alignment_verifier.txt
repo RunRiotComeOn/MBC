@@ -11,11 +11,13 @@ Checks:
   C1 Visual Sufficiency — Given caption + fact, is the question answerable with exactly vqa_answer?
   C2 Visual Non-leakage — Does vqa_answer appear verbatim OR as an obvious paraphrase inside caption? (If yes, C2 fails.)
   C3 Fact Necessity     — If you remove the fact, is the question still answerable from caption alone? (If yes, C3 fails.)
+  C4 Event Specificity  — Does the caption contain enough distinctive visual cues (trophy shapes, stage designs, venue details, uniform details) to identify the SPECIFIC event rather than just a generic category? For example, a "concert stage with a trophy" could be any music competition — it must include details unique to the specific event (e.g. the Eurovision glass microphone trophy, the NBA's Larry O'Brien trophy). If the caption could equally describe a different event of the same type, C4 fails.
 
 Return STRICT JSON:
 {
   "C1_visual_sufficiency": true | false,
   "C2_no_leakage": true | false,
   "C3_fact_necessity": true | false,
-  "rationale": "<2-4 sentences covering all three checks>"
+  "C4_event_specificity": true | false,
+  "rationale": "<2-4 sentences covering all four checks>"
 }

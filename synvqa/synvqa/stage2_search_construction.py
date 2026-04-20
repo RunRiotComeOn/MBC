@@ -127,7 +127,8 @@ def _process_one(
             for h in search.search(q):
                 if h.url not in hits:
                     hits[h.url] = {"url": h.url, "title": h.title, "snippet": h.snippet,
-                                   "query": q, "rank": h.rank}
+                                   "query": q, "rank": h.rank,
+                                   "raw_content": h.raw_content}
         except Exception as e:
             prov.log("search_error", query=q, error=str(e))
 
@@ -147,17 +148,26 @@ def _process_one(
     ranked.sort(key=lambda x: (-x["reliability_weight"], x["rank"]))
     ranked = ranked[: config["top_k_urls"]]
 
-    # 3. Fetch content
+    # 3. Use Tavily raw_content directly (server-side fetch); fall back to
+    #    local fetch_url only when raw_content is missing.
+    max_chars = config.get("max_content_chars", 40000)
     evidence = []
     for h in ranked:
-        fetched = fetch_url(
-            h["url"],
-            timeout_s=config["fetch_timeout_s"],
-            max_chars=config.get("max_content_chars", 40000),
-        )
-        prov.log("fetch", url=h["url"], ok=fetched["ok"], err=fetched.get("error"))
-        if fetched["ok"]:
-            evidence.append({**h, "content": fetched["text"]})
+        rc = (h.get("raw_content") or "").strip()
+        if rc:
+            content = rc[:max_chars]
+            prov.log("fetch", url=h["url"], ok=True, err=None, source="tavily_raw")
+            evidence.append({**h, "content": content})
+        else:
+            fetched = fetch_url(
+                h["url"],
+                timeout_s=config["fetch_timeout_s"],
+                max_chars=max_chars,
+            )
+            prov.log("fetch", url=h["url"], ok=fetched["ok"], err=fetched.get("error"),
+                     source="local_fallback")
+            if fetched["ok"]:
+                evidence.append({**h, "content": fetched["text"]})
     if not evidence:
         sample["reject_reason"] = "all_fetches_failed"
         sample["provenance"]["stage_2"] = prov.finalize()

@@ -132,7 +132,8 @@ def _synthesize(
             continue
 
         if aln.get("C1_visual_sufficiency") and aln.get("C2_no_leakage") \
-                and aln.get("C3_fact_necessity"):
+                and aln.get("C3_fact_necessity") \
+                and aln.get("C4_event_specificity", True):
             sample["caption"] = caption
             sample["vqa_question"] = vqa_q
             sample["vqa_answer"] = vqa_a

@@ -23,6 +23,7 @@ class SearchHit:
     title: str
     snippet: str
     rank: int
+    raw_content: str = ""
 
 
 class SearchClient:
@@ -61,7 +62,7 @@ class SearchClient:
                 "max_results": self.results_per_query,
                 "search_depth": "basic",
                 "include_answer": False,
-                "include_raw_content": False,
+                "include_raw_content": True,
                 "include_images": False,
             },
             timeout=20,
@@ -72,7 +73,9 @@ class SearchClient:
         self.last_answer = resp.get("answer", "") or ""
         return [
             SearchHit(url=r["url"], title=r.get("title", ""),
-                      snippet=r.get("content", ""), rank=i)
+                      snippet=r.get("content", ""),
+                      rank=i,
+                      raw_content=r.get("raw_content", "") or "")
             for i, r in enumerate(resp.get("results", []))
         ]
 

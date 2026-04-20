@@ -1,4 +1,4 @@
-# Small smoke-test pipeline for 5 samples through stages 1 and 2 only.
+# 100-sample run, skip stage 3 (veracity + parametric gap).
 target_vlm: "deepseek-chat"
 generator_llm: "deepseek-chat"
 judge_llm: "deepseek-chat"
@@ -8,19 +8,19 @@ embedding_model: "local-hash"
 strict_model_decorrelation: false
 cutoff_date: "2025-02"
 
-output_dir: "./data/stage12_5"
-target_dataset_size: 5
-oversample_factor: 1
+output_dir: "./data/run100"
+target_dataset_size: 100
+oversample_factor: 3
 
 stage1:
   n_seeds_min: 5
-  demos_per_call: 5
-  new_per_call: 5
+  demos_per_call: 10
+  new_per_call: 10
   dedup_threshold: 0.85
-  max_iters: 5
-  cluster_k: 5
+  max_iters: 50
+  cluster_k: 20
   seed_mix_min: 2
-  early_stop_consecutive_high_reject: 3
+  early_stop_consecutive_high_reject: 5
   high_reject_threshold: 0.7
 
 stage2:

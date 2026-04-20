@@ -1,14 +1,14 @@
-# Small smoke-test pipeline for 5 samples through stages 1 and 2 only.
+# 5-sample smoke test, stages 1+2+4+5 (skip stage 3), Gemini T2I.
 target_vlm: "deepseek-chat"
 generator_llm: "deepseek-chat"
 judge_llm: "deepseek-chat"
-t2i_model: "pollinations"
+t2i_model: "gemini"
 faithfulness_vlm: "deepseek-chat"
 embedding_model: "local-hash"
 strict_model_decorrelation: false
 cutoff_date: "2025-02"
 
-output_dir: "./data/stage12_5"
+output_dir: "./data/smoke_1245"
 target_dataset_size: 5
 oversample_factor: 1
 

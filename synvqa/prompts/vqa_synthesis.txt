@@ -17,7 +17,13 @@ Hard constraints:
 Caption guidance:
   - Describe a plausible real-world scene, not an abstract diagram.
   - Do NOT include text, captions, labels, names, or logos that would render the answer visible in the image.
-  - Describe generic, visually concrete elements: colors, materials, setting, composition.
+  - CRITICAL — Event Specificity: The caption must include enough distinctive visual cues to uniquely identify the specific event, venue, or context — not just a generic category. Ask yourself: "Could this caption describe a DIFFERENT event of the same type?" If yes, add distinguishing details.
+    Good: "the iconic glass microphone trophy of the Eurovision Song Contest on a stage with the contest's signature curved LED backdrop" → clearly Eurovision, not Grammys.
+    Bad: "a trophy on a concert stage with colorful lights" → could be any music competition.
+    Good: "a basketball arena with blue and orange confetti, a golden Larry O'Brien Championship Trophy at center court" → clearly NBA Finals.
+    Bad: "a basketball arena with confetti and a trophy" → could be NCAA, EuroLeague, etc.
+  - Use recognizable design elements (trophy shapes, stage designs, venue architecture, uniform details, distinctive color schemes) rather than text/names to establish specificity.
+  - After the distinguishing details, flesh out with concrete visual elements: colors, materials, setting, lighting, composition.
 
 Return STRICT JSON:
 {
