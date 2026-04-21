@@ -32,6 +32,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--stages", default="1,2,3,4,5",
                    help="Comma-separated stage ids (1,2,3a,3b,4,5 — '3' = 3a,3b)")
     p.add_argument("--resume-from-checkpoint", action="store_true")
+    p.add_argument("--resume-from", default=None,
+                   help="Resume from checkpoints in a specific data directory "
+                        "(e.g. --resume-from data/smoke_1245_v2). "
+                        "The pipeline loads the latest available checkpoint from "
+                        "that directory and writes new outputs to --output.")
     p.add_argument("--dry-run", action="store_true",
                    help="Load configs & clients but exit before running stages.")
     return p.parse_args()
@@ -93,6 +98,8 @@ def main() -> int:
     log.info("running stages: %s", stages)
 
     ck = CheckpointManager(output_dir)
+    # Optional: load checkpoints from a different (source) directory.
+    src_ck = CheckpointManager(args.resume_from) if args.resume_from else ck
 
     # Build clients lazily — only construct what we need.
     need_generator = any(s in stages for s in ("1", "2", "3b", "4"))
@@ -122,10 +129,12 @@ def main() -> int:
         log.info("dry run — exiting before stage execution")
         return 0
 
+    resume = args.resume_from_checkpoint or args.resume_from is not None
+
     # -------- Stage 1 --------
     samples: list[dict] | None = None
     if "1" in stages:
-        cached = ck.load_if_resuming(1, args.resume_from_checkpoint)
+        cached = src_ck.load_if_resuming(1, resume)
         if cached is not None:
             log.info("stage 1 resumed from checkpoint: %d items", len(cached))
             anchors = cached
@@ -138,13 +147,13 @@ def main() -> int:
             ck.write(1, anchors)
         samples = anchors
     else:
-        if ck.exists(1):
-            samples = list(ck.read(1))
+        if src_ck.exists(1):
+            samples = list(src_ck.read(1))
             log.info("loaded stage 1 checkpoint: %d items", len(samples))
 
     # -------- Stage 2 --------
     if "2" in stages:
-        cached = ck.load_if_resuming(2, args.resume_from_checkpoint)
+        cached = src_ck.load_if_resuming(2, resume)
         if cached is not None:
             log.info("stage 2 resumed: %d items", len(cached))
             samples = cached
@@ -157,12 +166,12 @@ def main() -> int:
                 search_client=search_client,
             )
             ck.write(2, samples)
-    elif samples is None and ck.exists(2):
-        samples = list(ck.read(2))
+    elif samples is None and src_ck.exists(2):
+        samples = list(src_ck.read(2))
 
     # -------- Stage 3a --------
     if "3a" in stages:
-        cached = ck.load_if_resuming(31, args.resume_from_checkpoint)
+        cached = src_ck.load_if_resuming(31, resume)
         if cached is not None:
             samples = cached
         else:
@@ -170,12 +179,12 @@ def main() -> int:
             from .stage3a_veracity import run as run_s3a
             samples = run_s3a(samples=samples, config=config, judge_llm=judge_llm)
             ck.write(31, samples)
-    elif samples is None and ck.exists(31):
-        samples = list(ck.read(31))
+    elif samples is None and src_ck.exists(31):
+        samples = list(src_ck.read(31))
 
     # -------- Stage 3b --------
     if "3b" in stages:
-        cached = ck.load_if_resuming(32, args.resume_from_checkpoint)
+        cached = src_ck.load_if_resuming(32, resume)
         if cached is not None:
             samples = cached
         else:
@@ -187,12 +196,12 @@ def main() -> int:
                 generator_llm=generator_llm,
             )
             ck.write(32, samples)
-    elif samples is None and ck.exists(32):
-        samples = list(ck.read(32))
+    elif samples is None and src_ck.exists(32):
+        samples = list(src_ck.read(32))
 
     # -------- Stage 4 --------
     if "4" in stages:
-        cached = ck.load_if_resuming(4, args.resume_from_checkpoint)
+        cached = src_ck.load_if_resuming(4, resume)
         if cached is not None:
             samples = cached
         else:
@@ -204,12 +213,12 @@ def main() -> int:
                 embedder=embedder,
             )
             ck.write(4, samples)
-    elif samples is None and ck.exists(4):
-        samples = list(ck.read(4))
+    elif samples is None and src_ck.exists(4):
+        samples = list(src_ck.read(4))
 
     # -------- Stage 5 --------
     if "5" in stages:
-        cached = ck.load_if_resuming(5, args.resume_from_checkpoint)
+        cached = src_ck.load_if_resuming(5, resume)
         if cached is not None:
             samples = cached
         else:
