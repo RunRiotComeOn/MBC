@@ -13,5 +13,5 @@ slurm-*.err
 
 synvqa/data/*
 
-.claude/*
+.claude/
 .codex
